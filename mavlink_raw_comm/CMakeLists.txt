@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(mavlink_sender)
+project(mavlink_raw_comm)
 
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
