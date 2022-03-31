@@ -1,13 +1,13 @@
-#include "mavlink_sender/MavlinkSender.hpp"
+#include "mavlink_encoder/MavlinkEncoder.hpp"
 
 int
 main(int argc, char ** argv)
 {
-  mavlink_sender::MavlinkSender * sender = new mavlink_sender::MavlinkSender();
+  mavlink_encoder::MavlinkEncoder * encoder = new mavlink_encoder::MavlinkEncoder();
 
-  sender->statusTextMsg("Hello World");
+  encoder->statusTextMsg("Hello World", status_text::StatusSeverity::Critical);
 
+  free(encoder);
 
-  free(sender);
   exit(EXIT_SUCCESS);
 }

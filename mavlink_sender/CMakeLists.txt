@@ -1,16 +1,23 @@
 cmake_minimum_required(VERSION 3.0)
 project(mavlink_sender)
 
-set(CMAKE_CXX_STANDARD 17)
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
 
 include_directories(include)
 
-add_library(mavlink_sender STATIC src/mavlink_sender/MavlinkSender.cpp)
+add_library(status_text_encoder STATIC src/status_text/StatusTextEncoder.cpp)
+add_library(mavlink_encoder STATIC src/mavlink_encoder/MavlinkEncoder.cpp)
+
+add_dependencies(mavlink_encoder status_text_encoder)
+
+target_link_libraries(mavlink_encoder status_text_encoder)
 
 add_executable(main src/main.cpp)
 
 target_compile_options(main PRIVATE -Wall -Wshadow)
 
-target_link_libraries(main mavlink_sender)
+target_link_libraries(main mavlink_encoder)
 
 install(TARGETS main DESTINATION ${PROJECT_SOURCE_DIR}/bin)

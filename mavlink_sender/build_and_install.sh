@@ -1,9 +1,6 @@
 #! /bin/sh
 
-if [ -d build ]
-then
-  rm -rf build
-fi
+rm -rf build bin 2> /dev/null
 
 mkdir build && cd build
 cmake ..
