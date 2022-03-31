@@ -7,8 +7,8 @@ endif()
 
 include_directories(include)
 
-add_library(status_text_encoder STATIC src/status_text/StatusTextEncoder.cpp)
 add_library(mavlink_encoder STATIC src/mavlink_encoder/MavlinkEncoder.cpp)
+add_library(status_text_encoder STATIC src/status_text/StatusTextEncoder.cpp)
 
 add_dependencies(mavlink_encoder status_text_encoder)
 

@@ -1,4 +1,5 @@
 #include <string>
+#include "mavlink_encoder/Digest.hpp"
 
 #ifndef STATUS_TEXT__STATUS_TEXT_ENCODER_CPP
 #define STATUS_TEXT__STATUS_TEXT_ENCODER_CPP
@@ -26,7 +27,8 @@ public:
 
     static StatusTextEncoder* getInstance();
 
-    void composePayload(const std::string & msg, const StatusSeverity & severity);
+    void composePayload(const std::string & msg, 
+      const StatusSeverity & severity, int seq_n, mavlink_encoder::DigestType * out_digest);
 
     // Not should be assignable
     void operator=(const StatusTextEncoder &) = delete;

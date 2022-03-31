@@ -1,4 +1,5 @@
 #include <string>
+#include "mavlink_encoder/Digest.hpp"
 #include "status_text/StatusTextEncoder.hpp"
 
 #ifndef MAVLINK_ENCODER__MAVLINK_ENCODER_CPP
@@ -12,7 +13,8 @@ class MavlinkEncoder
 public:
   MavlinkEncoder();
 
-  void statusTextMsg(const std::string & msg, const status_text::StatusSeverity & severity);
+  mavlink_encoder::DigestType statusTextMsg(const std::string & msg, 
+    const status_text::StatusSeverity & severity);
 
 private:
 
