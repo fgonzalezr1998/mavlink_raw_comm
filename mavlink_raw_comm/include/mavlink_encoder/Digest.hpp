@@ -4,25 +4,25 @@
 
 namespace mavlink_encoder
 {
-    enum {
-        MAXLENDIGEST = 263,
-    };
+  enum {
+    MAXLENDIGEST = 263,
+  };
 
-    typedef struct DigestType DigestType;
-    struct DigestType
+  typedef struct DigestType DigestType;
+  struct DigestType
+  {
+    unsigned char digest[MAXLENDIGEST];
+    int len;
+
+    void print_digest()
     {
-        unsigned char digest[MAXLENDIGEST];
-        int len;
-
-        void print_digest()
-        {
-            for (int i = 0; i < len; i++)
-            {
-                printf("0x%02X/", digest[i]);
-            }
-            printf("\n");
-        }
-    };
+      for (int i = 0; i < len; i++)
+      {
+        printf("%02x", digest[i]);
+      }
+      printf("\n");
+    }
+  };
 }
 
 #endif
