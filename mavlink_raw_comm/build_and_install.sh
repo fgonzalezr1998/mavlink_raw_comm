@@ -1,6 +1,6 @@
 #! /bin/sh
 
-rm -rf build bin 2> /dev/null
+rm -rf build bin lib 2> /dev/null
 
 mkdir build && cd build
 cmake ..
@@ -11,6 +11,13 @@ then
 fi
 
 make -j1
+
+if [ $? -ne 0 ]
+then
+  exit $?
+fi
+
+make test
 
 if [ $? -ne 0 ]
 then
