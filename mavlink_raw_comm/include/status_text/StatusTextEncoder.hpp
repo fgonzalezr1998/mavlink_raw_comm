@@ -36,6 +36,7 @@ public:
     mavlink_encoder::DigestType * out_digest);
 
   // Store on 'out_digest' DigestType with the statustext Header
+
   void composeHeader(int len_payload, int seq_n,
     int sys_id, int comp_id, mavlink_encoder::DigestType * out_digest);
 

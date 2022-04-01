@@ -23,7 +23,7 @@ namespace status_text
     const std::string & msg, const StatusSeverity & severity,
     int seq_n, mavlink_encoder::DigestType * out_digest)
   {
-    int len = msg.size() + 4;
+    int len = MAXTEXTLENGHT + 4;
 
     // If message is too long, it is invalid
     if (msg.size() > MAXTEXTLENGHT)
@@ -37,7 +37,7 @@ namespace status_text
     uint8_t sev = (uint8_t)severity;
 
     // Field2 text as char array
-    char text[MAXTEXTLENGHT + 1];
+    char text[MAXTEXTLENGHT];
     string2Buffer(msg, text);
 
     // Field3 id
@@ -50,11 +50,11 @@ namespace status_text
     unsigned char payload[len];
 
     payload[0] = sev; // 1
-    memcpy(&payload[1], text, msg.size());  // 1 + 2
+    memcpy(&payload[1], text, MAXTEXTLENGHT);  // 1 + 2
 
-    payload[msg.size() + 1] = id / 256;
-    payload[msg.size() + 2] = id % 256; // 1 + 2 + 3
-    payload[msg.size() + 3] = seq;      // 1 + 2 + 3 + 4
+    payload[MAXTEXTLENGHT + 1] = id / 256;
+    payload[MAXTEXTLENGHT + 2] = id % 256; // 1 + 2 + 3
+    payload[MAXTEXTLENGHT + 3] = seq;      // 1 + 2 + 3 + 4
 
     memcpy(out_digest->digest, payload, len);
     out_digest->len = len;
@@ -94,7 +94,7 @@ namespace status_text
 
   void StatusTextEncoder::string2Buffer(const std::string & text, char * buff)
   {
-    memset(buff, 0, MAXTEXTLENGHT + 1);
+    memset(buff, 0, MAXTEXTLENGHT);
     for (int i = 0; i < text.size(); i++)
     {
       buff[i] = text.at(i);

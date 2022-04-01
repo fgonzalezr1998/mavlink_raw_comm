@@ -41,6 +41,12 @@ namespace mavlink_encoder
     memcpy(out_digest.digest, digest, payloadDigest.len + headerDigest.len);
     out_digest.len = payloadDigest.len + headerDigest.len;
 
+    uint16_t check = checksum(out_digest);
+
+    out_digest.digest[out_digest.len] = check / (uint16_t)256;
+    out_digest.digest[out_digest.len + 1] = check % (uint16_t)256;
+    out_digest.len += 2;
+
     seq_n_++;
     free(textEncoder);
     return out_digest;
@@ -51,7 +57,10 @@ namespace mavlink_encoder
    */
   uint16_t MavlinkEncoder::checksum(const mavlink_encoder::DigestType & digest)
   {
-    // CODE THIS!
-    return 0;
+    // Ignore the first byte (magic byte -marker-)
+  
+    uint16_t checksum = crc_calculate(&digest.digest[1], digest.len);
+
+    return checksum;
   }
 }
