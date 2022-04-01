@@ -21,8 +21,6 @@ enum StatusSeverity
 class StatusTextEncoder
 {
 public:
-  StatusTextEncoder();
-
   // Not should be clonable:
 
   StatusTextEncoder(StatusTextEncoder &other) = delete;
@@ -43,6 +41,9 @@ public:
   // Not should be assignable
 
   void operator=(const StatusTextEncoder &) = delete;
+
+protected:
+  StatusTextEncoder();
 
 private:
   void string2Buffer(const std::string & text, char * buff);

@@ -10,10 +10,12 @@ namespace mavlink_encoder
    * Public Methods
    */
 
-  MavlinkEncoder::MavlinkEncoder()
+  MavlinkEncoder::MavlinkEncoder(int sys_id = 1, int comp_id = 0)
   : seq_n_(0)
   {
     std::cout << "I'm Mavlink Encoder\n";
+    this->sys_id_ = sys_id;
+    this->comp_id_ = comp_id;
   }
 
   mavlink_encoder::DigestType MavlinkEncoder::statusTextMsg(
@@ -32,7 +34,7 @@ namespace mavlink_encoder
     
     // Get Header
     mavlink_encoder::DigestType headerDigest;
-    textEncoder->composeHeader(payloadDigest.len, seq_n_, 1, 12, &headerDigest);
+    textEncoder->composeHeader(payloadDigest.len, seq_n_, sys_id_, comp_id_, &headerDigest);
 
     unsigned char digest[payloadDigest.len + headerDigest.len];
     memcpy(digest, headerDigest.digest, headerDigest.len);
@@ -47,7 +49,6 @@ namespace mavlink_encoder
     out_digest.digest[out_digest.len + 1] = check % (uint16_t)256;
     out_digest.len += 2;
 
-    seq_n_++;
     free(textEncoder);
     return out_digest;
   }

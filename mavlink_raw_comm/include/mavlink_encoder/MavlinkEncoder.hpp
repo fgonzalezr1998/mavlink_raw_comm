@@ -11,7 +11,7 @@ namespace mavlink_encoder
 class MavlinkEncoder
 {
 public:
-  MavlinkEncoder();
+  MavlinkEncoder(int sys_id, int comp_id);
 
   // Returns DigestType with full statustext message
 
@@ -23,6 +23,7 @@ private:
   uint16_t checksum(const mavlink_encoder::DigestType & digest);
 
   int seq_n_;  // packet sequence number
+  int sys_id_, comp_id_;
 };
 } // end namespace mavlink_encoder
 
