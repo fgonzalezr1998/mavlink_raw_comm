@@ -30,12 +30,15 @@ namespace mavlink_encoder
     mavlink_encoder::DigestType payloadDigest;
     memset(payloadDigest.digest, 0, mavlink_encoder::MAXLENDIGEST);
 
-    textEncoder->composePayload(msg, severity, seq_n_, &payloadDigest);
+    if (!textEncoder->composePayload(msg, severity, seq_n_, &payloadDigest))
+			throw StatusTextEncodeException();
     
     // Get Header
     mavlink_encoder::DigestType headerDigest;
-    textEncoder->composeHeader(payloadDigest.len, seq_n_, sys_id_, comp_id_, &headerDigest);
+    textEncoder->composeHeader(payloadDigest.len,
+			seq_n_, sys_id_, comp_id_, &headerDigest);
 
+		// Concatenate Header + Payload
     unsigned char digest[payloadDigest.len + headerDigest.len];
     memcpy(digest, headerDigest.digest, headerDigest.len);
     memcpy(&digest[headerDigest.len], payloadDigest.digest, payloadDigest.len);
@@ -43,6 +46,7 @@ namespace mavlink_encoder
     memcpy(out_digest.digest, digest, payloadDigest.len + headerDigest.len);
     out_digest.len = payloadDigest.len + headerDigest.len;
 
+		// Get Checksum
     uint16_t check = checksum(out_digest);
 
     out_digest.digest[out_digest.len] = check / (uint16_t)256;

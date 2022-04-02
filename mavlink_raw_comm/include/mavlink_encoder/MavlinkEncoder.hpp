@@ -8,6 +8,14 @@
 namespace mavlink_encoder
 {
 
+struct StatusTextEncodeException : public std::exception
+{
+	const char * what() const throw()
+	{
+		return "[statusTextMsg] Status text encoding failed!";
+	}
+};
+
 class MavlinkEncoder
 {
 public:

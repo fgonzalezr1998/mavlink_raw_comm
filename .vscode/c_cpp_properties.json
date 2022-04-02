@@ -2,7 +2,9 @@
     "env": {
       "myDefaultIncludePath": [
           "${workspaceFolder}",
-          "${workspaceFolder}/mavlink_raw_comm/include"],
+          "${workspaceFolder}/mavlink_raw_comm/include",
+					"${workspaceFolder}/mavlink_raw_comm/tests/*"
+				],
       "myCompilerPath": "/usr/bin/gcc"
     },
     "configurations": [

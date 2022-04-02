@@ -28,8 +28,9 @@ public:
   static StatusTextEncoder* getInstance();
 
   // Store on 'out_digest' DigestType with the statustext Payload
+	// Returns true if everything was ok. Else, returns false
 
-  void composePayload(const std::string & msg, 
+  bool composePayload(const std::string & msg, 
     const StatusSeverity & severity, int seq_n,
     mavlink_encoder::DigestType * out_digest);
 

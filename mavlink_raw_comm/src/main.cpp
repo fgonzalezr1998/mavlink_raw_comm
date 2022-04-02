@@ -1,3 +1,4 @@
+#include <iostream>
 #include "mavlink_encoder/MavlinkEncoder.hpp"
 
 int
@@ -5,8 +6,19 @@ main(int argc, char ** argv)
 {
   mavlink_encoder::MavlinkEncoder * encoder = new mavlink_encoder::MavlinkEncoder(1, 0);
 
-  mavlink_encoder::DigestType digest;
-  digest = encoder->statusTextMsg("Hello World", status_text::StatusSeverity::Critical);
+	mavlink_encoder::DigestType digest;
+	try
+	{
+		
+  	digest = encoder->statusTextMsg("Hello World", status_text::StatusSeverity::Critical);
+	}
+	catch(const std::exception & e)
+	{
+		std::cout << e.what() << std::endl;
+		free(encoder);
+		exit(EXIT_FAILURE);
+	}
+
 
   digest.print_digest();
 

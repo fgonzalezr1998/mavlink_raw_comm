@@ -3,7 +3,7 @@
 #include "status_text/StatusTextEncoder.hpp"
 
 #define MAXTEXTLENGHT 50
-#define MINTEXTLENGHT 8
+#define MINPKGLEN 8
 #define MSGID 253
 
 namespace status_text
@@ -19,7 +19,7 @@ namespace status_text
     return encoder;
   }    
 
-  void StatusTextEncoder::composePayload(
+  bool StatusTextEncoder::composePayload(
     const std::string & msg, const StatusSeverity & severity,
     int seq_n, mavlink_encoder::DigestType * out_digest)
   {
@@ -29,8 +29,7 @@ namespace status_text
     if (msg.size() > MAXTEXTLENGHT)
     {
       std::cout << "Message too long\n";
-      out_digest = nullptr;
-      return;
+      return false;
     }
 
     // Field1 Severity
@@ -52,18 +51,20 @@ namespace status_text
     payload[0] = sev; // 1
     memcpy(&payload[1], text, MAXTEXTLENGHT);  // 1 + 2
 
-    payload[MAXTEXTLENGHT + 1] = id / 256;
-    payload[MAXTEXTLENGHT + 2] = id % 256; // 1 + 2 + 3
+    payload[MAXTEXTLENGHT + 1] = id / (uint16_t)256;
+    payload[MAXTEXTLENGHT + 2] = id % (uint16_t)256; // 1 + 2 + 3
     payload[MAXTEXTLENGHT + 3] = seq;      // 1 + 2 + 3 + 4
 
     memcpy(out_digest->digest, payload, len);
     out_digest->len = len;
+
+		return true;
   }
 
   void StatusTextEncoder::composeHeader(int len_payload, int seq_n,
     int sys_id, int comp_id, mavlink_encoder::DigestType * out_digest)
   {
-    int len = MINTEXTLENGHT - 2;
+    int len = MINPKGLEN - 2;
     unsigned char header[len];
 
     // Field1 Packet start marker

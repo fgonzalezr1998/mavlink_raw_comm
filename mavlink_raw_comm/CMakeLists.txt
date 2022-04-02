@@ -5,12 +5,15 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
 
-include_directories(include)
+include_directories(
+	include
+	tests
+)
 
 # Compile and link libraries
 
-add_library(mavlink_encoder SHARED src/mavlink_encoder/MavlinkEncoder.cpp)
-add_library(status_text_encoder SHARED src/status_text/StatusTextEncoder.cpp)
+add_library(mavlink_encoder STATIC src/mavlink_encoder/MavlinkEncoder.cpp)
+add_library(status_text_encoder STATIC src/status_text/StatusTextEncoder.cpp)
 
 add_dependencies(mavlink_encoder status_text_encoder)
 
@@ -35,6 +38,11 @@ install(TARGETS status_text_encoder DESTINATION ${PROJECT_SOURCE_DIR}/lib)
 
 add_executable(trial_test tests/trial_test.cpp)
 
+add_executable(statustext_encoder_test 
+	tests/status_text/statustext_encoder_test.cpp)
+target_link_libraries(statustext_encoder_test status_text_encoder)
+
 # Run the test
 add_test(trial_test trial_test)
+add_test(statustext_encoder_test statustext_encoder_test)
 enable_testing()
