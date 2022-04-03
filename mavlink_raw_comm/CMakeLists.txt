@@ -40,7 +40,8 @@ add_executable(trial_test tests/trial_test.cpp)
 
 add_executable(statustext_encoder_test 
 	tests/status_text/statustext_encoder_test.cpp)
-target_link_libraries(statustext_encoder_test status_text_encoder)
+target_link_libraries(statustext_encoder_test 
+	status_text_encoder)
 
 # Run the test
 add_test(trial_test trial_test)

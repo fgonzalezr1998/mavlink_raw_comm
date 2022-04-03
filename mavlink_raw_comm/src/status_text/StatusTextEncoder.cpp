@@ -49,11 +49,9 @@ namespace status_text
     unsigned char payload[len];
 
     payload[0] = sev; // 1
-    memcpy(&payload[1], text, MAXTEXTLENGHT);  // 1 + 2
-
-    payload[MAXTEXTLENGHT + 1] = id / (uint16_t)256;
-    payload[MAXTEXTLENGHT + 2] = id % (uint16_t)256; // 1 + 2 + 3
-    payload[MAXTEXTLENGHT + 3] = seq;      // 1 + 2 + 3 + 4
+    memcpy(&payload[1], text, MAXTEXTLENGHT);  	// 1 + 2
+		memcpy(&payload[MAXTEXTLENGHT + 1], &id, 2);	// 1 + 2 + 3
+		payload[MAXTEXTLENGHT + 3] = seq;      			// 1 + 2 + 3 + 4
 
     memcpy(out_digest->digest, payload, len);
     out_digest->len = len;

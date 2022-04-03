@@ -1,3 +1,4 @@
+#define private public
 #include <cstring>
 #include "evaluation.hpp"
 #include "status_text/StatusTextEncoder.hpp"
