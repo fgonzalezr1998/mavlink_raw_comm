@@ -26,6 +26,9 @@ public:
   mavlink_encoder::DigestType statusTextMsg(const std::string & msg, 
     const status_text::StatusSeverity & severity);
 
+	void increaseSeqN();
+	void setSeqN(int seq);
+
 private:
 
   uint16_t checksum(const mavlink_encoder::DigestType & digest);

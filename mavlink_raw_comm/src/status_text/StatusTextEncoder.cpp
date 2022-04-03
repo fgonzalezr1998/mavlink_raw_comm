@@ -13,17 +13,19 @@ namespace status_text
     std::cout << "I'm status text encoder\n";
   }
 
-  StatusTextEncoder* StatusTextEncoder::getInstance()
+  StatusTextEncoder*
+	StatusTextEncoder::getInstance()
   {
     static StatusTextEncoder *encoder = new StatusTextEncoder();
     return encoder;
   }    
 
-  bool StatusTextEncoder::composePayload(
+  bool
+	StatusTextEncoder::composePayload(
     const std::string & msg, const StatusSeverity & severity,
-    int seq_n, mavlink_encoder::DigestType * out_digest)
+    mavlink_encoder::DigestType * out_digest)
   {
-    int len = MAXTEXTLENGHT + 4;
+    int len = MAXTEXTLENGHT + 1;
 
     // If message is too long, it is invalid
     if (msg.size() > MAXTEXTLENGHT)
@@ -39,19 +41,11 @@ namespace status_text
     char text[MAXTEXTLENGHT];
     string2Buffer(msg, text);
 
-    // Field3 id
-    uint16_t id = 0;
-
-    // Field4 sequence number
-    uint8_t seq = (uint8_t)seq_n;
-
     // Concatenate all fields
     unsigned char payload[len];
 
     payload[0] = sev; // 1
     memcpy(&payload[1], text, MAXTEXTLENGHT);  	// 1 + 2
-		memcpy(&payload[MAXTEXTLENGHT + 1], &id, 2);	// 1 + 2 + 3
-		payload[MAXTEXTLENGHT + 3] = seq;      			// 1 + 2 + 3 + 4
 
     memcpy(out_digest->digest, payload, len);
     out_digest->len = len;
@@ -59,7 +53,8 @@ namespace status_text
 		return true;
   }
 
-  void StatusTextEncoder::composeHeader(int len_payload, int seq_n,
+  void
+	StatusTextEncoder::composeHeader(int len_payload, int seq_n,
     int sys_id, int comp_id, mavlink_encoder::DigestType * out_digest)
   {
     int len = MINPKGLEN - 2;
@@ -91,7 +86,8 @@ namespace status_text
    * Private Methods
    */
 
-  void StatusTextEncoder::string2Buffer(const std::string & text, char * buff)
+  void
+	StatusTextEncoder::string2Buffer(const std::string & text, char * buff)
   {
     memset(buff, 0, MAXTEXTLENGHT);
     for (int i = 0; i < text.size(); i++)

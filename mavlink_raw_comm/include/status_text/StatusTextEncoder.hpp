@@ -31,7 +31,7 @@ public:
 	// Returns true if everything was ok. Else, returns false
 
   bool composePayload(const std::string & msg, 
-    const StatusSeverity & severity, int seq_n,
+    const StatusSeverity & severity,
     mavlink_encoder::DigestType * out_digest);
 
   // Store on 'out_digest' DigestType with the statustext Header

@@ -18,7 +18,8 @@ namespace mavlink_encoder
     this->comp_id_ = comp_id;
   }
 
-  mavlink_encoder::DigestType MavlinkEncoder::statusTextMsg(
+  mavlink_encoder::DigestType
+	MavlinkEncoder::statusTextMsg(
     const std::string & msg, const status_text::StatusSeverity & severity)
   {
     mavlink_encoder::DigestType out_digest;
@@ -30,8 +31,11 @@ namespace mavlink_encoder
     mavlink_encoder::DigestType payloadDigest;
     memset(payloadDigest.digest, 0, mavlink_encoder::MAXLENDIGEST);
 
-    if (!textEncoder->composePayload(msg, severity, seq_n_, &payloadDigest))
+    if (!textEncoder->composePayload(msg, severity, &payloadDigest))
+		{
+			free(textEncoder);
 			throw StatusTextEncodeException();
+		}
     
     // Get Header
     mavlink_encoder::DigestType headerDigest;
@@ -56,14 +60,28 @@ namespace mavlink_encoder
     return out_digest;
   }
 
+	void
+	MavlinkEncoder::increaseSeqN()
+	{
+		seq_n_++;
+	}
+
+	void
+	MavlinkEncoder::setSeqN(int seq)
+	{
+		seq_n_ = seq;
+	}
+
   /*
    * Private Methods
    */
-  uint16_t MavlinkEncoder::checksum(const mavlink_encoder::DigestType & digest)
+  uint16_t
+	MavlinkEncoder::checksum(const mavlink_encoder::DigestType & digest)
   {
     // Ignore the first byte (magic byte -marker-)
   
-    uint16_t checksum = crc_calculate(digest.digest, (uint16_t)digest.len);
+    uint16_t checksum = crc_calculate(digest.digest,
+			(uint16_t)digest.len);
 
     return checksum;
   }

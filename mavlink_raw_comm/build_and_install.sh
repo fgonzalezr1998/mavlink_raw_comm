@@ -10,7 +10,7 @@ then
   exit $?
 fi
 
-make -j1
+make -j `nproc`
 
 if [ $? -ne 0 ]
 then
