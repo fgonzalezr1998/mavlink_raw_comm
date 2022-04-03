@@ -13,7 +13,6 @@ namespace mavlink_encoder
   MavlinkEncoder::MavlinkEncoder(int sys_id = 1, int comp_id = 0)
   : seq_n_(0)
   {
-    std::cout << "I'm Mavlink Encoder\n";
     this->sys_id_ = sys_id;
     this->comp_id_ = comp_id;
   }
@@ -51,7 +50,7 @@ namespace mavlink_encoder
     out_digest.len = payloadDigest.len + headerDigest.len;
 
 		// Get Checksum
-    uint16_t check = checksum(out_digest);
+    uint16_t check = checksum(out_digest, status_text::CrcExtra);
 
 		memcpy(&out_digest.digest[out_digest.len], &check, 2);
     out_digest.len += 2;
@@ -76,12 +75,13 @@ namespace mavlink_encoder
    * Private Methods
    */
   uint16_t
-	MavlinkEncoder::checksum(const mavlink_encoder::DigestType & digest)
+	MavlinkEncoder::checksum(const mavlink_encoder::DigestType & digest,
+		uint8_t crc_extra)
   {
     // Ignore the first byte (magic byte -marker-)
   
-    uint16_t checksum = crc_calculate(digest.digest,
-			(uint16_t)digest.len);
+    uint16_t checksum = crc_calculate(&digest.digest[1], digest.len - 1);
+		crc_accumulate(crc_extra, &checksum);
 
     return checksum;
   }

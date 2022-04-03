@@ -43,7 +43,13 @@ add_executable(statustext_encoder_test
 target_link_libraries(statustext_encoder_test 
 	status_text_encoder)
 
+add_executable(mavlink_encoder_test 
+	tests/mavlink_encoder/mavlink_encoder_test.cpp)
+target_link_libraries(mavlink_encoder_test 
+mavlink_encoder)
+
 # Run the test
 add_test(trial_test trial_test)
 add_test(statustext_encoder_test statustext_encoder_test)
+add_test(mavlink_encoder_test statustext_encoder_test)
 enable_testing()

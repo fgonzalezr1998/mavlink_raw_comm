@@ -8,11 +8,6 @@
 
 namespace status_text
 {
-  StatusTextEncoder::StatusTextEncoder()
-  {
-    std::cout << "I'm status text encoder\n";
-  }
-
   StatusTextEncoder*
 	StatusTextEncoder::getInstance()
   {

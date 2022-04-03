@@ -6,6 +6,10 @@
 
 namespace status_text
 {
+enum {
+	CrcExtra = 83,
+};
+
 enum StatusSeverity
 {
   Emergency = 0,
@@ -44,7 +48,7 @@ public:
   void operator=(const StatusTextEncoder &) = delete;
 
 protected:
-  StatusTextEncoder();
+  StatusTextEncoder(){};
 
 private:
   void string2Buffer(const std::string & text, char * buff);

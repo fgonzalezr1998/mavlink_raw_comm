@@ -31,7 +31,8 @@ public:
 
 private:
 
-  uint16_t checksum(const mavlink_encoder::DigestType & digest);
+  uint16_t checksum(const mavlink_encoder::DigestType & digest,
+		uint8_t crc_extra);
 
   int seq_n_;  // packet sequence number
   int sys_id_, comp_id_;

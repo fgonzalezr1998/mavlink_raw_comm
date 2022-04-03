@@ -9,8 +9,8 @@ main(int argc, char ** argv)
 	mavlink_encoder::DigestType digest;
 	try
 	{
-		encoder->setSeqN(162);
-  	digest = encoder->statusTextMsg("Hello", status_text::StatusSeverity::Critical);
+		encoder->setSeqN(140);
+  	digest = encoder->statusTextMsg("Hello", status_text::StatusSeverity::Info);
 	}
 	catch(const std::exception & e)
 	{
