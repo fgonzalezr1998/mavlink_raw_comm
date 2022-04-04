@@ -42,6 +42,10 @@ namespace mavlink_encoder
     MAXLENDIGEST = 263,
   };
 
+	/*
+	 * @brief Struct to manage array of bytes that represent data of a
+	 *	mavlink package encoded
+	 */
   typedef struct DigestType DigestType;
   struct DigestType
   {
