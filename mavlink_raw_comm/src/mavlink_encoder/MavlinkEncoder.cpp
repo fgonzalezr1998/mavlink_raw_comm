@@ -38,6 +38,8 @@
 #include "mavlink_encoder/checksum.h"
 #include "mavlink_encoder/MavlinkEncoder.hpp"
 
+#define MINPKGLEN 8
+
 namespace mavlink_encoder
 {
   /*
@@ -53,17 +55,17 @@ namespace mavlink_encoder
     this->comp_id_ = comp_id;
   }
 
-  mavlink_encoder::DigestType
+  DigestType
 	MavlinkEncoder::statusTextMsg(
     const std::string & msg, const status_text::StatusSeverity & severity)
   {
-    mavlink_encoder::DigestType out_digest;
+    DigestType out_digest;
     status_text::StatusTextEncoder *textEncoder;
 
     textEncoder = status_text::StatusTextEncoder::getInstance();
 
-    // get Payload
-    mavlink_encoder::DigestType payloadDigest;
+    // Get Payload
+    DigestType payloadDigest;
     memset(payloadDigest.digest, 0, mavlink_encoder::MAXLENDIGEST);
 
     if (!textEncoder->composePayload(msg, severity, &payloadDigest))
@@ -73,7 +75,7 @@ namespace mavlink_encoder
 		}
     
     // Get Header
-    mavlink_encoder::DigestType headerDigest;
+    DigestType headerDigest;
     textEncoder->composeHeader(payloadDigest.len,
 			seq_n_, sys_id_, comp_id_, &headerDigest);
 
@@ -95,6 +97,68 @@ namespace mavlink_encoder
     return out_digest;
   }
 
+	bool
+	MavlinkEncoder::decodePkg(
+		const DigestType & digest, DigestMsgType * decoded_msg)
+	{
+		int header_len, payload_len;
+
+		if (!msgIntegrityIsOk(digest))
+			return false;
+
+		// Get Header
+		header_len = MINPKGLEN - 2;
+		memcpy(decoded_msg->header.digest, digest.digest, header_len);
+		decoded_msg->header.len = header_len;
+		if (!headerIsOk(decoded_msg->header, digest))
+			return false;
+
+		// Get Payload
+		memcpy(decoded_msg->payload.digest,
+			&digest.digest[header_len], digest.digest[MINPKGLEN - 2]);
+		decoded_msg->payload.len = digest.len - MINPKGLEN;
+
+		// Get checksum
+		memcpy(&decoded_msg->checksum, &digest.digest[digest.len - 2], 2);
+
+		// Get message id
+		decoded_msg->msg_type = static_cast<MsgsIds>(
+			digest.digest[MINPKGLEN - 3]);
+
+		return true;
+	}
+
+	bool
+	MavlinkEncoder::msgIntegrityIsOk(const DigestType & full_pkg)
+	{
+		uint8_t crc_extra;
+
+		uint8_t msg_id = full_pkg.digest[MINPKGLEN - 3];
+
+		getCrcExtra(msg_id, &crc_extra);
+
+		return (&crc_extra != nullptr) && crcIsOk(full_pkg, crc_extra);
+	}
+
+	void
+	MavlinkEncoder::getCrcExtra(uint8_t id, uint8_t * crc_extra)
+	{
+		/* There are best ways to do it. When this library be capable of
+		 * decode more types of packages, it will be improved for not
+		 * having an enormous switch
+		 */
+
+		switch (id)
+		{
+		case MsgsIds::StatusText:
+			*crc_extra = status_text::CrcExtra;
+			break;
+
+		default:
+			crc_extra = nullptr;
+		}
+	}
+
 	void
 	MavlinkEncoder::increaseSeqN()
 	{
@@ -113,9 +177,41 @@ namespace mavlink_encoder
    ***********************
 	 */
 
+	bool
+	MavlinkEncoder::headerIsOk(
+		const DigestType & header, const DigestType & full_pkg)
+	{
+		// Decode all fields
+		int header_len = MINPKGLEN - 2;
+
+		return (header.digest[0] == 0xFE) &&
+			(header.digest[1] == (full_pkg.len - MINPKGLEN)) &&
+			(header.digest[2] >= 0) &&
+			(header.digest[3] >= 1) &&
+			(header.digest[4] >= 1);
+	}
+
+	bool
+	MavlinkEncoder::crcIsOk(const DigestType & digest, uint8_t crc_extra)
+	{
+		// Calculate the checksum of the message excluding the crc
+		DigestType msg_data;
+
+		memcpy(&msg_data, digest.digest, digest.len - 2);
+		msg_data.len = digest.len - 2;
+		uint16_t msg_checksum = checksum(msg_data, crc_extra);
+
+		// Separate checksum in two bytes
+		unsigned char check[2];
+		memcpy(check, &msg_checksum, 2);
+
+		// Compare calculated checksum with the chacksum of the package
+		return digest.digest[digest.len - 2] == check[0] &&
+			digest.digest[digest.len - 1] == check[1];
+	}
+
   uint16_t
-	MavlinkEncoder::checksum(const mavlink_encoder::DigestType & digest,
-		uint8_t crc_extra)
+	MavlinkEncoder::checksum(const DigestType & digest, uint8_t crc_extra)
   {
     // Ignore the first byte (magic byte -marker-)
   

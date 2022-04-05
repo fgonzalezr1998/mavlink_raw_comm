@@ -60,7 +60,6 @@ class StatusTextEncoder
 {
 public:
   // Not should be clonable:
-
   StatusTextEncoder(StatusTextEncoder &other) = delete;
 
   static StatusTextEncoder* getInstance();

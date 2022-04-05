@@ -32,6 +32,8 @@
 
 /* Author: Fernando Gonzalez fergonzaramos@yahoo.es  */
 
+#include <cstring>
+
 #ifndef MAVLINK_ENCODER__DIGEST_CPP
 #define MAVLINK_ENCODER__DIGEST_CPP
 
@@ -73,15 +75,7 @@ namespace mavlink_encoder
 			if (d1.len != d2.len)
 				return false;
 
-			for (int i = 0; i < d1.len; i++)
-			{
-				if (d1.digest[i] != d2.digest[i])
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return memcmp(d1.digest, d2.digest, d1.len) == 0;
 		}
   };
 }

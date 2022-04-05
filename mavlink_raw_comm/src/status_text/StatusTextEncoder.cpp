@@ -42,6 +42,12 @@
 
 namespace status_text
 {
+	/*
+	 ***********************
+   *   Public Methods    *
+   ***********************
+	 */
+
   StatusTextEncoder*
 	StatusTextEncoder::getInstance()
   {
@@ -112,8 +118,10 @@ namespace status_text
   }
 
   /*
-   * Private Methods
-   */
+	 ***********************
+   *   Private Methods   *
+   ***********************
+	 */
 
   void
 	StatusTextEncoder::string2Buffer(const std::string & text, char * buff)

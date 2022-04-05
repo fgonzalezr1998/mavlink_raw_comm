@@ -43,6 +43,10 @@
 namespace mavlink_encoder
 {
 
+enum MsgsIds {
+	StatusText = 253,
+};
+
 struct StatusTextEncodeException : public std::exception
 {
 	const char * what() const throw()
@@ -51,9 +55,23 @@ struct StatusTextEncodeException : public std::exception
 	}
 };
 
+typedef struct DigestMsgType DigestMsgType;
+struct DigestMsgType {
+	MsgsIds msg_type;
+	DigestType header;
+	DigestType payload;
+	uint16_t checksum;
+};
+
 class MavlinkEncoder
 {
 public:
+	/*
+	 * Constructor
+	 *
+	 * @param sys_id System ID (given by flight controller). Default: 1
+	 * @param sys_id Component ID (given by flight controller). Default: 0
+	 */
   MavlinkEncoder(int sys_id, int comp_id);
 
   /* Returns a digest with full statustext message encoded following mavlink
@@ -68,8 +86,27 @@ public:
 	 * @throws mavlink_encoder::StatusTextEncodeException Thrown
 	 * if the message is larger than 50 bytes
 	 */
-  mavlink_encoder::DigestType statusTextMsg(const std::string & msg, 
+  DigestType statusTextMsg(const std::string & msg, 
     const status_text::StatusSeverity & severity);
+
+	/*
+	 * Returns if the specified Mavlinkv1 package is not malformed
+	 *
+	 * @param full_pkg DigestType conteining the package's digest
+	 * 
+	 * @return true if package is correct. false if it is malformed
+	 */
+	bool msgIntegrityIsOk(const DigestType & full_pkg);
+
+	/*
+	 * Decode specified Mavlinkv1 package
+	 *
+	 * @param digest DigestType that represents a Mavlinkv1 raw package
+	 * @param decoded_msg Output decoded message
+	 * 
+	 * @return true if the package was succesfully decoded. false, otherwise
+	 */
+	bool decodePkg(const DigestType & digest, DigestMsgType * decoded_msg);
 
 	/*
 	 * Increase in one the sequence number. It will be encoded in the next package
@@ -86,6 +123,24 @@ public:
 	void setSeqN(int seq);
 
 private:
+	/*
+	 * Check if a package header is correct based on the full package data
+	 *
+	 * @param header DigestType containing the header's digest
+	 * @param full_pkg DigestType containing the full Mavlinkv1 package
+	 * 
+	 * @return true if the header is correct. false otherwise
+	 */
+	bool headerIsOk(const DigestType & header, const DigestType & full_pkg);
+
+	/*
+	 * Check the integrity of a message
+	 * @param digest Input message
+	 * @param crc_extra crc_extra. It depends on the type of message
+	 * 
+	 * @return true if the checksum is correct. false, otherwise
+	 */
+	bool crcIsOk(const DigestType & digest, uint8_t crc_extra);
 
 	/*
 	 * Returns the checksum of a given mavlink package
@@ -96,6 +151,14 @@ private:
 	 */
   uint16_t checksum(const mavlink_encoder::DigestType & digest,
 		uint8_t crc_extra);
+
+	/*
+	 * Get the crc_extra given the message id
+	 *
+	 * @param id message id obtained from Mavlinkv1 package bytes
+	 * @param crc_extra Here the crc_extra is stored
+	 */
+	void getCrcExtra(uint8_t id, uint8_t * crc_extra);
 
   int seq_n_;  // packet sequence number
   int sys_id_, comp_id_;

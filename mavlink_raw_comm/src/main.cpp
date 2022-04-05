@@ -53,8 +53,12 @@ main(int argc, char ** argv)
 		exit(EXIT_FAILURE);
 	}
 
-
   digest.print_digest();
+
+	bool integrity;
+	integrity = encoder->msgIntegrityIsOk(digest);
+
+	std::cout << integrity << std::endl;
 
   free(encoder);
 

@@ -4,14 +4,14 @@
 
 ## Summary
 
-C++ library to encode Mavlinkv1 packages to be sended by serial port or UDP socket to flight controller (WIP)
+C++ library to encode/decode Mavlinkv1 packages to be sended by serial port or UDP socket to flight controller or to be read (WIP)
 
 * **Mainteiner status:** Mainteined
 * **Mainteiner:** Fernando González Ramos <fergonzaramos@yahoo.es>
 * **Author:** Fernando González <fergonzaramos@yahoo.es>
 * **License:** BSD
 
-> NOTE: Work In progress
+> NOTE: Work In Progress
 
 ## How to Build
 
