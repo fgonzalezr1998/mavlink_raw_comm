@@ -13,6 +13,8 @@ public class StatusTextEncoder {
     }
 
     private static final int MAXTEXTLENGHT = 50;
+    private static final int MINPKGLEN = 8;
+    private static final int MSGID = 253;
 
     private static StatusTextEncoder statusTextEncoder = null;
 
@@ -28,7 +30,7 @@ public class StatusTextEncoder {
         int len = MAXTEXTLENGHT + 1;
         byte[] outDigest = new byte[len];
 
-        if (severity >= StatusSeverity.EMERGENGY && severity <= StatusSeverity.DEBUG) {
+        if (severity < StatusSeverity.EMERGENGY || severity > StatusSeverity.DEBUG) {
             throw new StatusTextPayloadEx("Severity Incorrect");
         }
         if (msg.length() > MAXTEXTLENGHT) {
@@ -50,7 +52,7 @@ public class StatusTextEncoder {
         }
         // Fill with zeros:
         for (i = msgBytes.length; i < MAXTEXTLENGHT; i++) {
-            text[i] = 0x00;
+            text[i] = (byte)0x00;
         }
 
         // Concatenate all fields
@@ -60,5 +62,30 @@ public class StatusTextEncoder {
         }
 
         return outDigest;
+    }
+
+    public byte[] composeHeader(int len_payload, int seq_n, int sys_id, int comp_id) {
+        int len = MINPKGLEN - 2;
+        byte[] digest = new byte[len];
+
+        // Field1 Package start marker
+        digest[0] = (byte)0xFE;
+
+        // Field2 Payload length
+        digest[1] = (byte)len_payload;
+
+        //Field3 Seq number
+        digest[2] = (byte)seq_n;
+
+        //Field4 System ID
+        digest[3] = (byte)sys_id;
+
+        //Field5 Component ID
+        digest[4] = (byte)comp_id;
+
+        //Field6 Message ID
+        digest[5] = (byte)MSGID;
+
+        return digest;
     }
 }

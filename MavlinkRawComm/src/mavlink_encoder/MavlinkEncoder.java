@@ -14,12 +14,34 @@ public class MavlinkEncoder {
     }
 
     public byte[] statusTextMsg(String msg, int severity) throws StatusTextPayloadEx {
-        byte[] payloadDigest;
+        byte[] payloadDigest, headerDigest, bodyPkg;
         StatusTextEncoder textEncoder = StatusTextEncoder.getInstance();
 
-        // Compose the payload
+        // Compose Payload
         payloadDigest = textEncoder.composePayload(msg, severity);
 
-        return payloadDigest;
+        // Compose Header
+        headerDigest = textEncoder.composeHeader(payloadDigest.length, seq_n, sys_id, comp_id);
+
+        // Concatenate Header + Payload
+        bodyPkg = concatenateDigests(headerDigest, payloadDigest);
+
+        // Calculate checksum
+
+        return bodyPkg;
+    }
+
+    private byte[] concatenateDigests(byte[] digest1, byte[] digest2) {
+        byte[] out = new byte[digest1.length + digest2.length];
+        int i;
+
+        for (i = 0; i < digest1.length; i++) {
+            out[i] = digest1[i];
+        }
+        for (i = 0; i < digest2.length; i++) {
+            out[digest1.length + i] = digest2[i];
+        }
+
+        return out;
     }
 }
