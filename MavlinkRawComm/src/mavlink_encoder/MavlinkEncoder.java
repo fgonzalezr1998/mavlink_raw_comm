@@ -16,6 +16,15 @@ public class MavlinkEncoder {
         System.out.println("I'm Mavlink Encoder");
     }
 
+    /**Returns a digest with full statustext message encoded following mavlink
+     * packages specification
+     *
+     * @param msg Message to be sent (50 chars maximum)
+     * @param severity Severity of the statustext message
+     * @return Byte array that contains the full message encoded and ready
+     *  to be sent to a Pixhawk/Autopilot
+     * @throws StatusTextPayloadEx Thrown if the message is larger than 50 bytes
+     */
     public byte[] statusTextMsg(String msg, int severity) throws StatusTextPayloadEx {
         byte[] payloadDigest, headerDigest, bodyPkg, checksum;
         StatusTextEncoder textEncoder = StatusTextEncoder.getInstance();
@@ -39,6 +48,17 @@ public class MavlinkEncoder {
         return concatenateDigests(bodyPkg, checksum);
     }
 
+    /**
+     * Increase in one the sequence number. It will be encoded in the next package bytes calculated
+     */
+    public void increaseSeqN() {
+        seq_n++;
+    }
+
+    /**Set a specific Sequence Number. It will be encoded in the next package bytes calculated
+     *
+     * @param seq_n Sequence number to set
+     */
     public void setSeqN(int seq_n) {
         this.seq_n = seq_n;
     }

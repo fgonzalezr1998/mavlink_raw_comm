@@ -29,6 +29,12 @@ public class StatusTextEncoder {
         return statusTextEncoder;
     }
 
+    /**
+     * Returns Byte array with the statustext Payload
+     *
+     * @param msg Message to be encoded
+     * @param severity Statustext severity
+     */
     public byte[] composePayload(String msg, int severity) {
         int len = MAXTEXTLENGTH + 1;
         byte[] outDigest = new byte[len];
@@ -67,6 +73,14 @@ public class StatusTextEncoder {
         return outDigest;
     }
 
+    /**
+     * Returns a Byte array with the statustext Header
+     *
+     * @param len_payload Lenght of the message's payload
+     * @param seq_n Sequence number
+     * @param sys_id System ID (Given by flight controller)
+     * @param comp_id Component ID (Given by flight controller)
+     */
     public byte[] composeHeader(int len_payload, int seq_n, int sys_id, int comp_id) {
         int len = MINPKGLEN - 2;
         byte[] digest = new byte[len];
