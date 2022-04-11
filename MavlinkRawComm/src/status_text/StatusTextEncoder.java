@@ -1,6 +1,9 @@
 package status_text;
 
 public class StatusTextEncoder {
+
+    public static byte CRCEXTRA = 83 & 0xFF;    // without sign
+
     public class StatusSeverity {
         public static final int EMERGENGY = 0;
         public static final int ALERT = 1;
@@ -12,7 +15,7 @@ public class StatusTextEncoder {
         public static final int DEBUG = 7;
     }
 
-    private static final int MAXTEXTLENGHT = 50;
+    private static final int MAXTEXTLENGTH = 50;
     private static final int MINPKGLEN = 8;
     private static final int MSGID = 253;
 
@@ -27,13 +30,13 @@ public class StatusTextEncoder {
     }
 
     public byte[] composePayload(String msg, int severity) {
-        int len = MAXTEXTLENGHT + 1;
+        int len = MAXTEXTLENGTH + 1;
         byte[] outDigest = new byte[len];
 
         if (severity < StatusSeverity.EMERGENGY || severity > StatusSeverity.DEBUG) {
             throw new StatusTextPayloadEx("Severity Incorrect");
         }
-        if (msg.length() > MAXTEXTLENGHT) {
+        if (msg.length() > MAXTEXTLENGTH) {
             throw new StatusTextPayloadEx("Message too long");
         }
 
@@ -41,18 +44,18 @@ public class StatusTextEncoder {
         byte sev = (byte)severity;
 
         //Field2 text as char array
-        byte[] text = new byte[MAXTEXTLENGHT];
+        byte[] text = new byte[MAXTEXTLENGTH];
         byte[] msgBytes;
 
         msgBytes = msg.getBytes();
         // copy into text:
         int i;
         for (i = 0; i < msgBytes.length; i++) {
-            text[i] = msgBytes[i];
+            text[i] = (byte)(msgBytes[i] & 0xFF);
         }
         // Fill with zeros:
-        for (i = msgBytes.length; i < MAXTEXTLENGHT; i++) {
-            text[i] = (byte)0x00;
+        for (i = msgBytes.length; i < MAXTEXTLENGTH; i++) {
+            text[i] = (byte)(0x00 & 0xFF);
         }
 
         // Concatenate all fields
@@ -69,22 +72,22 @@ public class StatusTextEncoder {
         byte[] digest = new byte[len];
 
         // Field1 Package start marker
-        digest[0] = (byte)0xFE;
+        digest[0] = (byte)(0xFE & 0xFF);
 
         // Field2 Payload length
-        digest[1] = (byte)len_payload;
+        digest[1] = (byte)(len_payload & 0xFF);
 
         //Field3 Seq number
-        digest[2] = (byte)seq_n;
+        digest[2] = (byte)(seq_n & 0xFF);
 
         //Field4 System ID
-        digest[3] = (byte)sys_id;
+        digest[3] = (byte)(sys_id & 0xFF);
 
         //Field5 Component ID
-        digest[4] = (byte)comp_id;
+        digest[4] = (byte)(comp_id & 0xFF);
 
         //Field6 Message ID
-        digest[5] = (byte)MSGID;
+        digest[5] = (byte)(MSGID & 0xFF);
 
         return digest;
     }

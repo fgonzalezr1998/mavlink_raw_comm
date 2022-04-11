@@ -3,6 +3,9 @@ package mavlink_encoder;
 import status_text.StatusTextEncoder;
 import status_text.StatusTextPayloadEx;
 
+import java.sql.Array;
+import java.util.Arrays;
+
 public class MavlinkEncoder {
     private int seq_n = 0;
     private int sys_id, comp_id;
@@ -14,7 +17,7 @@ public class MavlinkEncoder {
     }
 
     public byte[] statusTextMsg(String msg, int severity) throws StatusTextPayloadEx {
-        byte[] payloadDigest, headerDigest, bodyPkg;
+        byte[] payloadDigest, headerDigest, bodyPkg, checksum;
         StatusTextEncoder textEncoder = StatusTextEncoder.getInstance();
 
         // Compose Payload
@@ -27,8 +30,24 @@ public class MavlinkEncoder {
         bodyPkg = concatenateDigests(headerDigest, payloadDigest);
 
         // Calculate checksum
+        int check = checksum(Arrays.copyOfRange(bodyPkg, 1, bodyPkg.length), StatusTextEncoder.CRCEXTRA);
 
-        return bodyPkg;
+        checksum = new byte[2];
+        checksum[0] = (byte) (check & 0xFF);
+        checksum[1] = (byte) ((check >> 8) & 0xFF);
+
+        return concatenateDigests(bodyPkg, checksum);
+    }
+
+    public void setSeqN(int seq_n) {
+        this.seq_n = seq_n;
+    }
+
+    private int checksum(byte[] buffer, byte crc_extra) {
+        Checksum checksumComposer = new Checksum();
+        checksumComposer.crcCalculate(buffer);
+        checksumComposer.crcAccumulate(crc_extra);
+        return checksumComposer.getCrc();
     }
 
     private byte[] concatenateDigests(byte[] digest1, byte[] digest2) {

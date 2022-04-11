@@ -13,6 +13,7 @@ public class Main {
 
     public void initialize() {
         MavlinkEncoder encoder = new MavlinkEncoder(1, 0);
+        encoder.setSeqN(140);
         try {
             byte[] msg = encoder.statusTextMsg("Hello", StatusTextEncoder.StatusSeverity.INFO);
             printDigest(msg);
