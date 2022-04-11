@@ -81,7 +81,7 @@ public:
 	 * @param len_payload Lenght of the message's payload
 	 * @param seq_n Sequence number
 	 * @param sys_id System ID (Given by flight controller)
-	 * @param comp_od Component ID (Given by flight controller)
+	 * @param comp_id Component ID (Given by flight controller)
 	 * @param out_digest DigestType where the calculated header will be stored
 	 */
   void composeHeader(int len_payload, int seq_n,
