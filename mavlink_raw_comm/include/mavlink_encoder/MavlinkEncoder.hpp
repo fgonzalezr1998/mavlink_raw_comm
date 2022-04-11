@@ -77,11 +77,11 @@ public:
   /* Returns a digest with full statustext message encoded following mavlink
 	 * packages specification
 	 *
-	 * @param msg Message to be sended (50 chars maximum)
+	 * @param msg Message to be sent (50 chars maximum)
 	 * @param severity Severity of the statustext message
 	 * 
 	 * @return DigestType that contains the full message encoded and ready
-	 * to be sended to a Pixhawk/Autopilot
+	 * to be sent to a Pixhawk/Autopilot
 	 * 
 	 * @throws mavlink_encoder::StatusTextEncodeException Thrown
 	 * if the message is larger than 50 bytes

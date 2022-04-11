@@ -56,7 +56,8 @@ static inline uint16_t crc_calculate(const uint8_t* pBuffer, uint16_t length)
 {
 	uint16_t crcTmp;
 	crc_init(&crcTmp);
-	while (length--) {
+	while (length--)
+	{
 		crc_accumulate(*pBuffer++, &crcTmp);
 	}
 	return crcTmp;
@@ -75,7 +76,8 @@ static inline uint16_t crc_calculate(const uint8_t* pBuffer, uint16_t length)
 static inline void crc_accumulate_buffer(uint16_t *crcAccum, const char *pBuffer, uint16_t length)
 {
 	const uint8_t *p = (const uint8_t *)pBuffer;
-	while (length--) {
+	while (length--)
+	{
 		crc_accumulate(*p++, crcAccum);
 	}
 }
