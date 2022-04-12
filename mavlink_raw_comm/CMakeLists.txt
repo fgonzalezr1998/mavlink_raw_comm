@@ -51,5 +51,5 @@ mavlink_encoder)
 # Run the test
 add_test(trial_test trial_test)
 add_test(statustext_encoder_test statustext_encoder_test)
-add_test(mavlink_encoder_test statustext_encoder_test)
+add_test(mavlink_encoder_test mavlink_encoder_test)
 enable_testing()

@@ -56,6 +56,12 @@ enum StatusSeverity
   Debug
 };
 
+typedef struct PayloadStatusTextType PayloadStatusTextType;
+struct PayloadStatusTextType {
+	StatusSeverity severity;
+	std::string text;
+};
+
 class StatusTextEncoder
 {
 public:
@@ -87,7 +93,16 @@ public:
   void composeHeader(int len_payload, int seq_n,
     int sys_id, int comp_id, mavlink_encoder::DigestType * out_digest);
 
-  // Not should be assignable
+	/*
+	 *	Decode all fields of the Statustext payload
+	 *
+	 * @param payload Input payload to be decoded
+	 * @param decoded_payload Output variable where decoded fields are stored
+	 */
+	void decodePayload(
+		const mavlink_encoder::DigestType & payload, PayloadStatusTextType * decoded_payload);
+
+  // Should not be assignable
   void operator=(const StatusTextEncoder &) = delete;
 
 protected:

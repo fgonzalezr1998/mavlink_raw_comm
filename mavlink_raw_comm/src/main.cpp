@@ -55,10 +55,8 @@ main(int argc, char ** argv)
 
   digest.print_digest();
 
-	bool integrity;
-	integrity = encoder->msgIntegrityIsOk(digest);
-
-	std::cout << integrity << std::endl;
+	mavlink_encoder::DigestMsgType decoded;
+	encoder->decodePkg(digest, &decoded);
 
   free(encoder);
 

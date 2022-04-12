@@ -117,6 +117,14 @@ namespace status_text
     out_digest->len = len;
   }
 
+  void
+  StatusTextEncoder::decodePayload(
+		const mavlink_encoder::DigestType & payload, PayloadStatusTextType * decoded_payload)
+  {
+    // CODE THIS
+    ;
+  }
+
   /*
 	 ***********************
    *   Private Methods   *

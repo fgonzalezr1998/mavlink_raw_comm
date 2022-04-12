@@ -115,7 +115,7 @@ namespace mavlink_encoder
 
 		// Get Payload
 		memcpy(decoded_msg->payload.digest,
-			&digest.digest[header_len], digest.digest[MINPKGLEN - 2]);
+			&digest.digest[header_len], digest.len - MINPKGLEN);
 		decoded_msg->payload.len = digest.len - MINPKGLEN;
 
 		// Get checksum
@@ -187,8 +187,8 @@ namespace mavlink_encoder
 		return (header.digest[0] == 0xFE) &&
 			(header.digest[1] == (full_pkg.len - MINPKGLEN)) &&
 			(header.digest[2] >= 0) &&
-			(header.digest[3] >= 1) &&
-			(header.digest[4] >= 1);
+			(header.digest[3] >= 0) &&
+			(header.digest[4] >= 0);
 	}
 
 	bool
