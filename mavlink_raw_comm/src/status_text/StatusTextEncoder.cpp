@@ -121,8 +121,16 @@ namespace status_text
   StatusTextEncoder::decodePayload(
 		const mavlink_encoder::DigestType & payload, PayloadStatusTextType * decoded_payload)
   {
-    // CODE THIS
-    ;
+    // Decode severity
+    decoded_payload->severity = static_cast<StatusSeverity>(payload.digest[0]);
+
+    // Decode text
+    char *text = (char*)malloc(MAXTEXTLENGHT);
+    // - Ensure not decoding more than 50 chars
+    memcpy(text, (char *)&payload.digest[1], MAXTEXTLENGHT);
+    decoded_payload->text = std::string(text);
+
+    free(text);
   }
 
   /*

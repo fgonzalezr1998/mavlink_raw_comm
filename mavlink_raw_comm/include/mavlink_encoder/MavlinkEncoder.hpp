@@ -51,7 +51,7 @@ struct StatusTextEncodeException : public std::exception
 {
 	const char * what() const throw()
 	{
-		return "[statusTextMsg] Status text encoding failed!";
+		return "[StatusTextMsg] Status text encoding failed!";
 	}
 };
 

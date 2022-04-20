@@ -44,7 +44,7 @@ main(int argc, char ** argv)
 	try
 	{
 		encoder->setSeqN(140);
-  	digest = encoder->statusTextMsg("Hello", status_text::StatusSeverity::Info);
+  	digest = encoder->statusTextMsg("Hello World, I'm the first status text message!!", status_text::StatusSeverity::Notice);
 	}
 	catch(const std::exception & e)
 	{
@@ -57,6 +57,18 @@ main(int argc, char ** argv)
 
 	mavlink_encoder::DigestMsgType decoded;
 	encoder->decodePkg(digest, &decoded);
+
+	if (decoded.msg_type == mavlink_encoder::MsgsIds::StatusText)
+	{
+		status_text::StatusTextEncoder *textDecoder;
+		textDecoder = status_text::StatusTextEncoder::getInstance();
+
+		status_text::PayloadStatusTextType decoded_payload;
+		textDecoder->decodePayload(decoded.payload, &decoded_payload);
+
+		std::cout << decoded_payload.severity << std::endl;
+		std::cout << decoded_payload.text << std::endl;
+	}
 
   free(encoder);
 
