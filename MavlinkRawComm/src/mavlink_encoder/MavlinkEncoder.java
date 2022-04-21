@@ -7,6 +7,19 @@ import java.sql.Array;
 import java.util.Arrays;
 
 public class MavlinkEncoder {
+
+    public static class MsgsIds {
+        public static final int StatusText = 253;
+    }
+
+    public static class DigestMsg {
+        public int msg_type;
+        public byte[] header;
+        public byte[] payload;
+        public int checksum;
+    }
+
+    private static final int MinPkgLen = 8;
     private int seq_n = 0;
     private int sys_id, comp_id;
     public  MavlinkEncoder(int sys_id, int comp_id) {
@@ -48,6 +61,63 @@ public class MavlinkEncoder {
         return concatenateDigests(bodyPkg, checksum);
     }
 
+    public DigestMsg decodePkg(byte[] digest) {
+        DigestMsg digestMsg = null;
+        if (msgIntegrityIsOk(digest)) {
+            digestMsg = new DigestMsg();
+
+            // Get header
+            digestMsg.header = new byte[MinPkgLen - 2];
+            for (int i = 0; i < MinPkgLen - 2; i++) {
+                digestMsg.header[i] = digest[i];
+            }
+
+            // Get payload
+            digestMsg.payload = new byte[digest.length - MinPkgLen];
+            int j = 0;
+            for (int i = MinPkgLen - 2; i < digest.length - 2; i++) {
+                digestMsg.payload[j++] = digest[i];
+            }
+
+            // Get Checksum
+            digestMsg.checksum = ((digest[digest.length - 1] & 0xff) << 8) | (digest[digest.length - 2] & 0xff);
+
+            // Get message id
+            digestMsg.msg_type = digest[MinPkgLen - 3] & 0xff;
+        }
+
+        return digestMsg;
+    }
+
+    /**
+     * Returns if the codified mavlink message is correctly built. It checks the checksum
+     * respecting to the package data
+     *
+     * @param full_pkg mavlink message
+     * @return boolean indicating the integrity of the message
+     */
+    public boolean msgIntegrityIsOk(byte[] full_pkg) {
+        byte crc_extra;
+        int msg_id;
+
+        msg_id = full_pkg[MinPkgLen - 3] & 0xFF;
+        crc_extra = crcExtra(msg_id);
+
+        return crcIsOk(full_pkg, crc_extra);
+    }
+
+    public byte crcExtra(int msg_id) {
+        byte crc_extra;
+        switch (msg_id) {
+            case MsgsIds.StatusText:
+                crc_extra = StatusTextEncoder.CRCEXTRA;
+                break;
+            default:
+                crc_extra = 0x00 & 0xFF;
+        }
+        return crc_extra;
+    }
+
     /**
      * Increase in one the sequence number. It will be encoded in the next package bytes calculated
      */
@@ -63,6 +133,29 @@ public class MavlinkEncoder {
         this.seq_n = seq_n;
     }
 
+    /**
+     *
+     * @param digest Mavlink message to check its crc (checksum)
+     * @param crc_extra crc extra corresponding to the type of message
+     * @return true if crc is ok. Else, false is returned
+     */
+    private boolean crcIsOk(byte[] digest, byte crc_extra) {
+        // Calculate the checksum of the message excluding the crc
+        int msg_checksum = checksum(Arrays.copyOfRange(digest, 1, digest.length - 2), crc_extra);
+
+        // Get checksum encoded in the package
+        int pkg_checksum = ((digest[digest.length - 1] & 0xff) << 8) | (digest[digest.length - 2] & 0xff);
+
+        return msg_checksum == pkg_checksum;
+    }
+
+    /**
+     * Calculate a checksum from mavlink digest message
+     *
+     * @param buffer Digest to calculate the checksum
+     * @param crc_extra crc extra corresponding to the type of message
+     * @return the calculated checksum (integer)
+     */
     private int checksum(byte[] buffer, byte crc_extra) {
         Checksum checksumComposer = new Checksum();
         checksumComposer.crcCalculate(buffer);

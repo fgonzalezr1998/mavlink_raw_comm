@@ -2,7 +2,7 @@ package status_text;
 
 public class StatusTextEncoder {
 
-    public static byte CRCEXTRA = 83 & 0xFF;    // without sign
+    public static final byte CRCEXTRA = 83 & 0xFF;    // without sign
 
     public class StatusSeverity {
         public static final int EMERGENGY = 0;
