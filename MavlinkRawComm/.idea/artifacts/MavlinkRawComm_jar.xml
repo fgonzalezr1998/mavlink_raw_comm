@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="MavlinkRawComm:jar">
+  <artifact type="jar" name="MavlinkRawComm:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/MavlinkRawComm_jar</output-path>
     <root id="archive" name="MavlinkRawComm.jar">
       <element id="module-output" name="MavlinkRawComm" />

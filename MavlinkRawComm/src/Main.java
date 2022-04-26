@@ -16,14 +16,37 @@ public class Main {
         MavlinkEncoder encoder = new MavlinkEncoder(1, 0);
         encoder.setSeqN(140);
         try {
-            byte[] msg = encoder.statusTextMsg("Hello", StatusTextEncoder.StatusSeverity.INFO);
+            System.out.println("Coding 'Hello World' text...");
+            byte[] msg = encoder.statusTextMsg("Hello World!", StatusTextEncoder.StatusSeverity.INFO);
+
+            System.out.print("Digest:\n\t");
             printDigest(msg);
+            System.out.println("Decoding previous message...");
             MavlinkEncoder.DigestMsg decoded = encoder.decodePkg(msg);
             if (decoded != null) {
+                System.out.print("Header:\n\t");
                 printDigest(decoded.header);
+
+                System.out.print("Payload:\n\t");
                 printDigest(decoded.payload);
+
+                System.out.print("Checksum:\n\t");
                 System.out.println(decoded.checksum);
-                System.out.println(decoded.msg_type & 0xff);
+
+                System.out.print("Type of Message:\n\t");
+                System.out.println(decoded.msg_type);
+
+                if (decoded.msg_type == MavlinkEncoder.MsgsIds.StatusText) {
+                    System.out.println("Decoding Payload...");
+                    StatusTextEncoder textEncoder = StatusTextEncoder.getInstance();
+                    StatusTextEncoder.PayloadStatusText payloadStatusText;
+                    payloadStatusText = textEncoder.decodePayload(decoded.payload);
+
+                    System.out.print("Severity:\n\t");
+                    System.out.println(payloadStatusText.getSeverity());
+                    System.out.print("Text:\n\t");
+                    System.out.println(payloadStatusText.getText());
+                }
             }
         } catch (StatusTextPayloadEx e) {
             System.out.println(e.getMessage());

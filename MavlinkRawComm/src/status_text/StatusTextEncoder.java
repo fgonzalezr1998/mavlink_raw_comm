@@ -1,10 +1,12 @@
 package status_text;
 
+import java.util.Arrays;
+
 public class StatusTextEncoder {
 
     public static final byte CRCEXTRA = 83 & 0xFF;    // without sign
 
-    public class StatusSeverity {
+    public static class StatusSeverity {
         public static final int EMERGENGY = 0;
         public static final int ALERT = 1;
         public static final int CRITICAL = 2;
@@ -13,6 +15,26 @@ public class StatusTextEncoder {
         public static final int NOTICE = 5;
         public static final int INFO = 6;
         public static final int DEBUG = 7;
+    }
+
+    public static class PayloadStatusText {
+        private int severity;
+        private String text;
+
+        public void setSeverity(int sev) {
+            severity = sev;
+        }
+        public void setText(String t) {
+            text = t;
+        }
+
+        public int getSeverity() {
+            return severity;
+        }
+
+        public String getText() {
+            return text;
+        }
     }
 
     private static final int MAXTEXTLENGTH = 50;
@@ -104,5 +126,35 @@ public class StatusTextEncoder {
         digest[5] = (byte)(MSGID & 0xFF);
 
         return digest;
+    }
+
+    /**
+     *
+     * @param payload input payload
+     * @return PayloadStatusText object or null in case of error
+     */
+    public PayloadStatusText decodePayload(byte[] payload) {
+        PayloadStatusText payloadStatusText = new PayloadStatusText();
+
+        if (severityIsOk(payload[0])) {
+            payloadStatusText.setSeverity((payload[0] & 0xff));
+        } else {
+            return null;
+        }
+
+        int textLength;
+        for (textLength = 1; textLength < payload.length; textLength++) {
+            if (payload[textLength] == '\0')
+                break;
+        }
+
+        String text = new String(Arrays.copyOfRange(payload, 1, textLength));
+        payloadStatusText.setText(text);
+
+        return payloadStatusText;
+    }
+
+    private boolean severityIsOk(byte b) {
+        return (int)(b & 0xff) >= StatusSeverity.EMERGENGY && (int)(b & 0xff) <= StatusSeverity.DEBUG;
     }
 }
